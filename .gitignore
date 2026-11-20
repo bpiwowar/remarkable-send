@@ -6,3 +6,5 @@ web-ext-artifacts
 .DS_Store
 *.zip
 .codegraph/
+# Local secret references (pass-cli run / op run --env-file)
+*.env
