@@ -168,11 +168,13 @@ def send(method, url, *, attempts=4, **kwargs):
 
 
 def get_addon():
-    """Read the listing, dodging the CDN cache that fronts the public endpoint."""
+    """Read the listing, dodging the CDN cache that fronts the public endpoint.
+    Authenticated: an add-on that is not public yet (in review) is only
+    visible to its owners."""
     resp = requests.get(
         f"{BASE}/",
         params={"nocache": random.randint(1, 10**9)},
-        headers={"Cache-Control": "no-cache"},
+        headers={"Cache-Control": "no-cache", **auth_header()},
         timeout=30,
     )
     resp.raise_for_status()
