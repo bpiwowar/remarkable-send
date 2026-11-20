@@ -1,0 +1,8 @@
+{
+  "categories": {
+    "firefox": ["feeds-news-blogging"]
+  },
+  "version": {
+    "license": "MIT"
+  }
+}

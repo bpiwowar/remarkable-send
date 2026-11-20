@@ -1,22 +1,28 @@
 # Send to reMarkable (unofficial)
 
-A Firefox extension that sends what you are reading to a reMarkable tablet,
-through the reMarkable cloud:
+<!--
+	The section between the amo:start and amo:end markers is the source for the
+	addons.mozilla.org listing description: helpers/amo-update.py reads it from
+	here, so keep it a self-contained description of the extension.
+-->
+<!-- amo:start -->
 
-- **PDFs and ePubs** are sent as they are. The extension keeps a copy of the
-  document as the tab loads it, so one-time download links, POST responses and
-  signed URLs work too; otherwise it downloads the file again (with your
-  cookies, from the cache when possible).
-- **Web pages** are turned into an ePub of their main article (Readability,
-  the extraction behind Firefox's Reader View), images included.
+Send to reMarkable sends what you are reading to your reMarkable tablet, through the reMarkable cloud.
+
+- **PDFs and ePubs** are sent as they are. The extension keeps a copy of the document as the tab loads it, so one-time download links and expiring URLs work too; otherwise it downloads the file again.
+- **Web pages** are turned into an ePub of their main article (Readability, the extraction behind Firefox's Reader View), images included.
 - **Links**: right-click a link to send what it points to.
+
+Connect once with a one-time code from my.remarkable.com, choose a destination folder if you like, then use the toolbar button or the right-click menu. Documents go straight from your browser to the reMarkable cloud: there is no service in the middle and nothing is collected.
+
+Not affiliated with reMarkable AS.
+
+<!-- amo:end -->
 
 The cloud protocol comes from
 [remarkable-annotations](https://github.com/bpiwowar/remarkable-annotations)'s
 sans-I/O client (WebAssembly, a port of rmapi-js): the library decides which
 requests to make, the extension makes them.
-
-Not affiliated with reMarkable AS.
 
 ## Use
 
@@ -66,6 +72,35 @@ Or load `distribution/manifest.json` from `about:debugging` → *This Firefox* �
 `web-ext lint` (on a production build). A husky pre-commit hook runs
 lint-staged; a commit-msg hook checks Conventional Commits. `make dist-zip`
 builds the archive for addons.mozilla.org.
+
+## Build from source
+
+This is how the published package is built (it is what addons.mozilla.org
+reviewers get as the source archive), with Node 24 and npm:
+
+```bash
+npm ci
+npm run build      # -> distribution/
+```
+
+`remarkable_annotations_wasm_bg.wasm` comes as it is from the
+[remarkable-annotations](https://www.npmjs.com/package/remarkable-annotations)
+npm package (version pinned in `package-lock.json`, published from GitHub
+Actions with provenance); it is built from the Rust sources of
+[that repository](https://github.com/bpiwowar/remarkable-annotations) with
+`wasm/build-npm.sh`.
+
+## Release
+
+Run the *Release* workflow (Actions → Release → Run workflow). It tests and
+builds, tags a date-based version, attaches the unsigned zip to a GitHub
+release, and submits the build with its source archive to addons.mozilla.org,
+which signs and lists it once reviewed. The `Firefox` environment holds the
+AMO API credentials (`WEB_EXT_API_KEY`, `WEB_EXT_API_SECRET`).
+
+`helpers/amo-update.py` updates the listing (description from the `amo:`
+section above, summary from the manifest, screenshots from a
+`## Screenshots` section if there is one): dry run by default, `--apply` to send.
 
 ## Limits
 

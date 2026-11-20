@@ -1,0 +1,79 @@
+# Manual release, as in nomoredoodle (from fregante/ghatemplates webext):
+# test and build, tag a date-based version (daily-version-action), attach the
+# unsigned zip to a GitHub release, then submit to addons.mozilla.org, which
+# signs it and lists it once reviewed.
+#
+# The "Firefox" environment holds WEB_EXT_API_KEY / WEB_EXT_API_SECRET (the
+# JWT issuer and secret of https://addons.mozilla.org/developers/addon/api/key/).
+
+env:
+  PROJECT_NAME: remarkable-send
+
+name: Release
+on:
+  workflow_dispatch: null
+
+jobs:
+  Version:
+    outputs:
+      created: ${{ env.DAILY_VERSION_CREATED }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Test and build
+        run: npm test
+      - name: Create tag if necessary
+        uses: fregante/daily-version-action@v2
+      - name: Update manifest.json with version ${{ env.DAILY_VERSION }}
+        if: env.DAILY_VERSION_CREATED
+        run: npx dot-json@1 distribution/manifest.json version "$DAILY_VERSION"
+      # AMO wants the sources of a minified build: the tagged tree.
+      - name: Source archive
+        if: env.DAILY_VERSION_CREATED
+        run: git archive --format=zip -o source.zip HEAD
+      - name: Ready for "submit" jobs
+        if: env.DAILY_VERSION_CREATED
+        uses: actions/upload-artifact@v4
+        with:
+          name: distribution
+          path: |
+            distribution
+            source.zip
+            amo-metadata.json
+      - name: Create release
+        if: env.DAILY_VERSION_CREATED
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          filename="$PROJECT_NAME-$DAILY_VERSION-for-local-testing-only.zip"
+          (cd distribution && zip -r "../$filename" ./*)
+          gh release create "$DAILY_VERSION" --generate-notes "$filename"
+
+  Firefox:
+    if: needs.Version.outputs.created
+    needs: Version
+    name: Submit (Firefox)
+    environment: Firefox
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: distribution
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: >-
+          npx web-ext@10 sign --channel listed
+          --source-dir distribution
+          --upload-source-code source.zip
+          --amo-metadata amo-metadata.json
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
