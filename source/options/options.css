@@ -1,0 +1,30 @@
+main {
+	max-width: 36em;
+	margin: 2em auto;
+	padding: 0 1em;
+}
+
+h2 {
+	margin: 1.6em 0 0.4em;
+	font-size: 1em;
+}
+
+.row input {
+	flex: 1;
+}
+
+label.check {
+	display: flex;
+	gap: 0.4em;
+	align-items: center;
+	margin-top: 0.8em;
+	color: var(--fg);
+}
+
+.help {
+	color: var(--muted);
+}
+
+a {
+	color: inherit;
+}

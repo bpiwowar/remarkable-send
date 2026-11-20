@@ -1,0 +1,72 @@
+{
+	"name": "remarkable-send",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Firefox extension: send the current page (PDF, ePub, or article as ePub) to a reMarkable tablet.",
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"build": "rm -rf distribution && NODE_NO_WARNINGS=1 parcel build --no-source-maps && node scripts/firefox-manifest.mjs",
+		"watch": "rm -rf distribution && NODE_NO_WARNINGS=1 parcel watch --no-hmr",
+		"start": "web-ext run",
+		"lint": "run-p lint:*",
+		"lint-fix": "run-p 'lint:* -- --fix'",
+		"lint:js": "xo",
+		"lint:css": "NODE_NO_WARNINGS=1 stylelint \"source/**/*.css\"",
+		"lint:types": "tsc --noEmit",
+		"lint:ext": "npm run build && web-ext lint",
+		"test": "run-s lint:js lint:css lint:types test:unit lint:ext",
+		"prepare": "husky",
+		"test:unit": "tsx --test tests/*.test.ts"
+	},
+	"browserslist": [
+		"last 1 Firefox version",
+		"Firefox ESR"
+	],
+	"stylelint": {
+		"extends": [
+			"stylelint-config-xo"
+		],
+		"rules": {
+			"declaration-no-important": null
+		}
+	},
+	"lint-staged": {
+		"*.ts": [
+			"xo --fix"
+		],
+		"*.css": [
+			"stylelint --fix"
+		]
+	},
+	"targets": {
+		"default": {
+			"source": "source/manifest.json",
+			"distDir": "./distribution"
+		}
+	},
+	"webExt": {
+		"sourceDir": "distribution"
+	},
+	"dependencies": {
+		"@mozilla/readability": "^0.6.0",
+		"fflate": "^0.8.3",
+		"remarkable-annotations": "^0.2.0"
+	},
+	"devDependencies": {
+		"@parcel/config-webextension": "^2.16.4",
+		"@types/firefox-webext-browser": "^143.0.1",
+		"@types/node": "^26.6.6",
+		"husky": "^9.1.7",
+		"jsdom": "^31.0.1",
+		"lint-staged": "^15.5.2",
+		"npm-run-all2": "^9.0.4",
+		"parcel": "^2.16.4",
+		"stylelint": "^16.26.1",
+		"stylelint-config-xo": "^1.0.2",
+		"tsx": "^4.23.15",
+		"typescript": "^5.9.3",
+		"web-ext": "^10.8.0",
+		"xo": "^1.2.3"
+	}
+}

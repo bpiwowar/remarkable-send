@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>Send to reMarkable</title>
+  </head>
+  <body>
+    <h1>Send to reMarkable</h1>
+
+    <section id="signedOut" hidden>
+      <p>Not connected to your reMarkable account.</p>
+      <button id="connect" type="button">Connect…</button>
+    </section>
+
+    <section id="signedIn" hidden>
+      <label for="name">Name</label>
+      <input type="text" id="name" autocomplete="off" />
+      <div class="row">
+        <button id="send" type="button">Send</button>
+        <span id="folder" class="folder"></span>
+      </div>
+      <p id="status" class="status" aria-live="polite"></p>
+    </section>
+
+    <footer>
+      <a href="#" id="options">Options</a>
+    </footer>
+
+    <script type="module" src="popup.ts"></script>
+  </body>
+</html>

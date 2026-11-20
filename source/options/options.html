@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="options.css" />
+    <title>Send to reMarkable — options</title>
+  </head>
+  <body>
+    <main>
+      <h1>Send to reMarkable</h1>
+
+      <section id="permissions" hidden>
+        <h2>Access to web pages</h2>
+        <p>
+          The extension needs access to the pages you send (to read their article,
+          download their PDF) and to the reMarkable cloud.
+        </p>
+        <button id="grant" type="button">Allow access</button>
+      </section>
+
+      <section>
+        <h2>reMarkable account</h2>
+        <div id="signedOut" hidden>
+          <p>
+            Get a one-time code from
+            <a href="https://my.remarkable.com/device/browser/connect" target="_blank" rel="noreferrer">my.remarkable.com</a>
+            and enter it here.
+          </p>
+          <label for="code">One-time code</label>
+          <div class="row">
+            <input type="text" id="code" autocomplete="off" spellcheck="false" maxlength="16" />
+            <button id="connect" type="button">Connect</button>
+          </div>
+        </div>
+        <div id="signedIn" hidden>
+          <p>Connected.</p>
+          <button id="signOut" type="button" class="secondary">Disconnect</button>
+        </div>
+        <p id="accountStatus" class="status" aria-live="polite"></p>
+      </section>
+
+      <section>
+        <h2>Documents</h2>
+        <label for="folder">Folder (e.g. <code>Web/Articles</code>; empty: My files)</label>
+        <input type="text" id="folder" autocomplete="off" />
+        <label class="check"><input type="checkbox" id="images" /> Include images in articles</label>
+        <p id="saved" class="status ok" aria-live="polite"></p>
+      </section>
+
+      <section class="help">
+        <h2>How it works</h2>
+        <ul>
+          <li>PDFs and ePubs are sent as they are, from the copy loaded in the tab when possible.</li>
+          <li>Other pages are turned into an ePub of their main article (Firefox's Reader View extraction).</li>
+          <li>Right-click a link to send what it points to.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script type="module" src="options.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+# Conventional Commits: type(scope)!: description
+head -1 "$1" | grep -qE '^(Merge |Revert |(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?!?: .+)' || {
+	echo "commit-msg: not a Conventional Commit (e.g. 'feat(popup): …'):" >&2
+	head -1 "$1" >&2
+	exit 1
+}

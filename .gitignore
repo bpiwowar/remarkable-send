@@ -1,0 +1,8 @@
+node_modules
+distribution
+.parcel-cache
+web-ext-artifacts
+*.log
+.DS_Store
+*.zip
+.codegraph/
